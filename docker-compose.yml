@@ -1,0 +1,35 @@
+version: "3.3"
+
+services:
+  frontend:
+    container_name: react-app
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+    volumes:
+      - ./front:/app
+      - /app/node_modules
+    ports:
+      - 3000:3000
+    environment:
+      - NODE_ENV=development
+
+  backend:
+    build: ./back
+    container_name: fastapi-ws
+    ports:
+      - 8000:8000
+    networks:
+      devnet:
+        ipv4_address: 192.168.200.2
+
+volumes:
+  node_modules:
+
+networks:
+  devnet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.200.0/24
+          gateway: 192.168.200.1
