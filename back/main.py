@@ -14,9 +14,9 @@ async def websocket_endpoint(websocket: WebSocket):
             # Wait for any message from the client
             # Send message to the client
             first = {
-                'device_status': {
-                    'device_active': False,
-                    'device_model': "ios",
+                'device': {
+                    'status': 'disconnected',
+                    'model': "ios",
                     'ports': [
                         {
                             'name': "GE0/0",
@@ -86,9 +86,9 @@ async def websocket_endpoint(websocket: WebSocket):
                 }
             }
             second = {
-                'device_status': {
-                    'device_active': True,
-                    'device_model': "ios",
+                'device': {
+                    'status': 'connected',
+                    'model': "ios",
                     'ports': [
                         {
                             'name': "GE0/0",
@@ -158,9 +158,9 @@ async def websocket_endpoint(websocket: WebSocket):
                 }
             }
             third = {
-                'device_status': {
-                    'device_active': False,
-                    'device_model': "some",
+                'device': {
+                    'status': 'connecting',
+                    'model': "some",
                     'ports': [
                         {
                             'name': "GE0/0",
