@@ -12,7 +12,7 @@ function Device(props: any) {
         deviceSVG = nullDeviceSVG
     } else {
         switch (model) {
-            case 'ios':
+            case 'IOS-L2':
                 deviceSVG = iosL2DeviceSVG
                 break;
             default:
@@ -29,7 +29,7 @@ function Device(props: any) {
 
     return (
         <>  
-            <div>{device}</div>
+            {device}
         </>
     );
 }

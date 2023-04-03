@@ -88,7 +88,7 @@ async def websocket_endpoint(websocket: WebSocket):
             second = {
                 'device': {
                     'status': 'connected',
-                    'model': "ios",
+                    'model': "IOS-L2",
                     'ports': [
                         {
                             'name': "GE0/0",
