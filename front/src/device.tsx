@@ -1,24 +1,23 @@
 import nullDeviceSVG from './assets/null_device.svg';
 import iosL2DeviceSVG from './assets/ios-l2_device.svg';
+import { DeviceProps } from './types/types';
 
-function Device(props: any) {
+function Device({deviceStatus, deviceModel, formData}: DeviceProps) {
+    let deviceSVG: string;
 
-    const status = props.deviceStatus
-    const model = props.deviceModel
+    // Device frame switch
+    switch (deviceModel) {
+        case 'IOS-L2':
+            deviceSVG = iosL2DeviceSVG;
+            break;
+        default:
+            deviceSVG = nullDeviceSVG;
+            break;
+    }
 
-    let deviceSVG
-
-    if (status === "disconnected") {
-        deviceSVG = nullDeviceSVG
-    } else {
-        switch (model) {
-            case 'IOS-L2':
-                deviceSVG = iosL2DeviceSVG
-                break;
-            default:
-                deviceSVG = nullDeviceSVG
-                break;
-        }
+    // If disconnected - grey device frame
+    if (deviceStatus === "disconnected" || formData.detach) {
+        deviceSVG = nullDeviceSVG;
     }
 
     const device = <section className='basic-grid'>

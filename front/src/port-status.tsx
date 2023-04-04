@@ -1,20 +1,39 @@
-function PortStatus(props: any) {
+import { PortStatusProps } from './types/types'
+
+function PortStatus({devicePorts, deviceModel, formData}: PortStatusProps) {
+    let portStatus: JSX.Element;
+
+    // Port status render
+    switch (deviceModel) {
+        case 'IOS-L2':
+            portStatus = <div>
+                            {devicePorts.map(({name, status}) => {
+                                return (
+                                    <div 
+                                        className={`port-${name.toLowerCase().replace('/', '_')} 
+                                        status ${status === true ? "up" : "down"}`} 
+                                        key={name}>
+                                        up
+                                    </div>
+                                )
+                            })}
+                        </div>;
+            break;
+        default:
+            portStatus = <div></div>
+            break;
+    }
+
+    // No ports if disconnected
+    if (formData.detach) {
+        portStatus = <div></div>
+    }
 
     return (
         <>  
-           {props.devicePorts.map(({name, status}) => {
-                return (
-                    <div 
-                        className={`port-${name.toLowerCase().replace('/', '_')} 
-                        status ${status === true ? "up" : "down"}`} 
-                        key={name}>
-                        up
-                    </div>
-                )
-            })}
+            {portStatus}
         </>
     );
-    
 }
 
 export default PortStatus;

@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700&display=swap');
 
-
 :root {
   background: #F5FEFF;
 }
@@ -9,15 +8,21 @@ body {
   font-family: 'Lato';
 }
 
+form {
+  display: inline-block;
+}
+
 .logo {
+  /* Logo svg */
   position: absolute;
   width: 306px;
   height: 112px;
-  left: 960px; /* на глаз */
+  left: 960px;
   top: 100px;
 }
 
 .device {
+  /* Device svg */
   position: absolute;
   width: 1052px;
   height: 167px;
@@ -25,35 +30,21 @@ body {
   top: 316px;
 }
 
-form {
-  display: inline-block;
-}
-
 .ip {
+  /* IP form */
   font-family: 'Lato';
   font-style: normal;
   font-weight: 300;
   font-size: 18px;
   line-height: 22px;
-  /* identical to box height */
 
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   padding: 2px 10px;
   gap: 2px;
-
-  /* IP Form */
 
   box-sizing: border-box;
-
-  /* Auto layout */
-
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  padding: 2px 10px;
-  gap: 2px;
 
   position: absolute;
   width: 158px;
@@ -67,6 +58,7 @@ form {
 }
 
 .connect {
+  /* Connect button */
   width: 73px;
   height: 14px;
 
@@ -78,8 +70,6 @@ form {
   letter-spacing: 0.2em;
 
   color: #FFFFFF;
-
-  /* Inside auto layout */
 
   flex: none;
   order: 0;
@@ -111,14 +101,11 @@ form {
 
 .error {
   /* Error message */
-
   position: absolute;
   width: 114px;
   height: 14px;
   left: 326px;
   top: 255px;
-
-  /* IP address is not valid. */
 
   font-family: 'Lato';
   font-style: normal;
@@ -130,6 +117,7 @@ form {
 }
 
 .indication {
+  /* LED indicator */
   position: absolute;
   width: 10px;
   height: 10px;
@@ -139,21 +127,25 @@ form {
 }
 
 .connected {
+  /* LED if connected */
   border-radius: 50%;
   background: linear-gradient(180deg, #03C988 0%, rgba(3, 201, 136, 0) 100%);
 }
 
 .disconnected {
+  /* LED if disconnected */
   border-radius: 50%;
   background: linear-gradient(180deg, #8aa19a 0%, rgba(3, 201, 136, 0) 100%);
 }
 
 .connecting {
+  /* LED if connecting */
   border-radius: 50%;
   background: linear-gradient(180deg, #e6d923 0%, rgba(3, 201, 136, 0) 100%);
 }
 
 .info {
+  /* LED if connected */
   position: absolute;
   width: 50px;
   height: 10px;
@@ -172,6 +164,7 @@ form {
 }
 
 .status {
+  /* Port status */
   position: absolute;
   width: 19px;
   height: 19px;
@@ -182,18 +175,20 @@ form {
   font-size: 16px;
   line-height: 19px;
   letter-spacing: 0.05em;
-
 }
 
 .up {
+  /* Port up */
   color: #03C988;
   text-shadow: 0px 0px 3px #03C988;
 }
 
 .down {
+  /* Port down */
   color: #ffffff;
 }
 
+/* Ports position for IOS-L2(16 GE ports) */
 .port-ge0_0 {
   left: 746px;
   top: 373px;

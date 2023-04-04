@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { IpFormProps, IpFormData } from './types/types'
 
-function IpForm(props: any) {
-    const [buttonText, setButtonText] = useState(true)
+function IpForm(props: IpFormProps) {
+    const [buttonState, setButtonState] = useState(true);
     const {
         register,
         handleSubmit,
@@ -11,17 +12,14 @@ function IpForm(props: any) {
         mode: 'onSubmit',
         defaultValues: {
             ip: '',
-            dConnect: false
+            detach: false
         }
     });
     
-    function handleClick() {
-        setButtonText(!buttonText);
-    }
+    // Change button name CONNECT/DETACH
+    const handleClick = () => setButtonState(!buttonState);
+    const onSubmit = (data: IpFormData) => props.pullFormData(data);
     
-    const onSubmit = (data:Object) => props.pull(data);
-    
-
     return (
         <>
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -38,11 +36,11 @@ function IpForm(props: any) {
                             maxLength: 14,
                             pattern: {
                                 value: /^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}$/gm,
-                                message: "invalid IP address"
+                                message: "Invalid IP address."
                             }
                         })
                 } />
-                <button className="connect" type="submit" onClick={handleClick}>{buttonText ? 'CONNECT' : 'DISCONNECT'}</button>
+                <button className="connect" type="submit" onClick={handleClick}>{buttonState ? 'CONNECT' : 'DETACH'}</button>
             </form>
         </>
     );

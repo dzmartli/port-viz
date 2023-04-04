@@ -1,29 +1,34 @@
-function Indication (props:any) {
+import { IndicationProps } from './types/types'
 
-    const status = props.deviceStatus
-    const model = props.deviceModel
+function Indication ({deviceStatus, deviceModel, formData}: IndicationProps) {
+    let indicationClassName: string = 'indication ';
+    let indicationText: string;
 
-    let indicationClassName: string = 'indication '
-    let indicationText: string
-
-    switch (status) {
+    // Status indication
+    switch (deviceStatus) {
         case 'connected':
-            indicationClassName += 'connected'
-            indicationText = model
+            indicationClassName += 'connected';
+            indicationText = deviceModel;
             break;
         case 'connecting':
-            indicationClassName += 'connecting'
-            indicationText = 'CONNECTING'
+            indicationClassName += 'connecting';
+            indicationText = 'CONNECTING';
             break;
         case 'disconnected':
-            indicationClassName += 'disconnected'
-            indicationText = 'DISCONNECTED'
+            indicationClassName += 'disconnected';
+            indicationText = 'DISCONNECTED';
             break;
         default:
-            indicationClassName += 'disconnected'
-            indicationText = 'DISCONNECTED'
+            indicationClassName += 'disconnected';
+            indicationText = 'DISCONNECTED';
             break;
     }
+
+    // Indication for detach
+    if (formData.detach) {
+        indicationClassName = 'indication disconnected';
+        indicationText = 'DISCONNECTED';
+    } 
 
     return (
         <>  

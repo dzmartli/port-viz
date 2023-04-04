@@ -5,77 +5,78 @@ import Form from './form'
 import Indication from './indication'
 import PortStatus from './port-status'
 import { useEffect, useState } from "react";
-
+import { IpFormData } from './types/types'
 
 function App() {
+    const [wsChannel, setWsChannel] = useState<WebSocket | null>(null);
+    const [detach, setDetach] = useState(false);
+    const [formData, setFormData] = useState({ip: '', detach: false});
+    const [deviceStatus, setDeviceStatus] = useState('disconnected');
+    const [deviceModel, setDeviceModel] = useState('IOS-L2');
+    const [devicePorts, setDevicePorts] = useState([]);
 
-  const [wsChannel, setWsChannel] = useState<WebSocket | null>(null)
-  const [disconnect, setDisconnect] = useState(false)
-  const [formData, setFormData] = useState({ip: '', dConnect: false})
-  const [deviceStatus, setDeviceStatus] = useState('disconnected')
-  const [deviceModel, setDeviceModel] = useState('IOS-L2')
-  const [devicePorts, setDevicePorts] = useState([])
-  
-  const pull_data = (data) => {
-    setDisconnect(!disconnect)
-    const updateData = {
-      ip: data.ip, 
-      dConnect: disconnect
-    }
-    setFormData(updateData)
-  }
-
-  useEffect(() => {
-    if (formData.ip === '') {
-      return
+    // Pull form data and flip detach
+    const pullFormData = (data: IpFormData) => {
+        setDetach(!detach);
+        const updatedData = {
+            ip: data.ip, 
+            detach: detach
+        }
+        setFormData(updatedData);
     }
 
-    let ws: WebSocket
+    useEffect(() => {
+        let ws: WebSocket;
 
-    const closeHandler = () => {
-      console.log('close ws')
-      setTimeout(createChannel, 3000);
-    }
-    
-    const cleanUp = () => {
-      ws?.removeEventListener('close', closeHandler)
-      ws?.removeEventListener('message', messageHandler)
-      ws?.close()
-    }
-    
-    const messageHandler = (e: MessageEvent) => {
-      const response = JSON.parse(e.data)
-      setDeviceModel(response.device.model)
-      setDevicePorts(response.device.ports)
-      setDeviceStatus(response.device.status)
-    }
+        // Message handling
+        // Send detach status after every event
+        const messageHandler = (event: MessageEvent) => {
+            const response = JSON.parse(event.data);
+            setDeviceModel(response.device.model);
+            setDevicePorts(response.device.ports);
+            setDeviceStatus(response.device.status);
+            ws.send((JSON.stringify(formData)));
+        }
 
-    function createChannel() {
-      cleanUp()
-      ws = new WebSocket("ws://192.168.200.2:8000/ws")
-      ws.addEventListener('close', closeHandler)
-      ws.addEventListener('message', messageHandler)
-      setWsChannel(ws)
-      console.log(formData)
-    }
-    
-    createChannel()
-    
-    //return () => {
-    //  ws?.removeEventListener('close', closeHandler)
-    //  ws?.close()
-    //}
-  }, [formData])
+        // Close ws
+        const cleanUp = () => {
+            wsChannel?.removeEventListener('message', messageHandler);
+            wsChannel?.close();
+        }
 
-  return (
-    <>
-      <Logo />
-      <Form pull={pull_data}/>
-      <Indication deviceStatus={deviceStatus} deviceModel={deviceModel}/>
-      <Device deviceModel={deviceModel} deviceStatus={deviceStatus}/>
-      <PortStatus devicePorts={devicePorts}/>
-    </>
-  )
+        // Prevent default trigger
+        if (formData.ip === '') {
+            return
+        }
+
+        // Close ws after detach click
+        if (formData.detach) {
+            wsChannel ? wsChannel.onopen = () => ws.send((JSON.stringify(formData))) : console.log('ws already closed');
+            cleanUp();
+        }
+
+        // Create ws
+        function createChannel() {
+            cleanUp();
+            ws = new WebSocket(import.meta.env.VITE_WS);
+            ws.onopen = () => ws.send((JSON.stringify(formData)));
+            ws.addEventListener('message', messageHandler);
+            setWsChannel(ws);
+        }
+
+        createChannel()
+
+    }, [formData])
+
+    return (
+        <>
+            <Logo />
+            <Form pullFormData={pullFormData} />
+            <Indication deviceStatus={deviceStatus} deviceModel={deviceModel} formData={formData} />
+            <Device deviceModel={deviceModel} deviceStatus={deviceStatus} formData={formData} />
+            <PortStatus deviceModel={deviceModel} devicePorts={devicePorts} formData={formData} />
+        </>
+    )
 }
 
 export default App;
