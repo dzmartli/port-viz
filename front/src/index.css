@@ -21,15 +21,6 @@ form {
   top: 100px;
 }
 
-.device {
-  /* Device svg */
-  position: absolute;
-  width: 1052px;
-  height: 167px;
-  left: 214px;
-  top: 316px;
-}
-
 .ip {
   /* IP form */
   font-family: 'Lato';
@@ -161,6 +152,15 @@ form {
 
   color: #7D73A1;
   z-index:99999999;
+}
+
+.device {
+  /* Device svg */
+  position: absolute;
+  width: 1052px;
+  height: 167px;
+  left: 214px;
+  top: 316px;
 }
 
 .status {

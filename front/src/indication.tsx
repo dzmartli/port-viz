@@ -1,6 +1,7 @@
 import { IndicationProps } from './types/types'
 
-function Indication ({deviceStatus, deviceModel, formData}: IndicationProps) {
+function Indication({deviceStatus, deviceModel, formData}: IndicationProps) {
+
     let indicationClassName: string = 'indication ';
     let indicationText: string;
 

@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { IpFormProps, IpFormData } from './types/types'
 
 function IpForm(props: IpFormProps) {
+    
     const [buttonState, setButtonState] = useState(true);
     const {
         register,
@@ -29,7 +30,7 @@ function IpForm(props: IpFormProps) {
                 { errors.ip && errors.ip.type === "maxLength" && (
                     <label className="error">IP address is not valid.</label>
                 )}
-                <input className="ip" type="text" {
+                <input className="ip" placeholder="IP address" type="text" {
                     ...register(
                         "ip", { 
                             required: true,

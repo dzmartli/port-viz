@@ -1,4 +1,3 @@
-import './App.css'
 import Logo from './logo'
 import Device from './device'
 import Form from './form'
@@ -8,6 +7,7 @@ import { useEffect, useState } from "react";
 import { IpFormData } from './types/types'
 
 function App() {
+
     const [wsChannel, setWsChannel] = useState<WebSocket | null>(null);
     const [detach, setDetach] = useState(false);
     const [formData, setFormData] = useState({ip: '', detach: false});
@@ -26,6 +26,7 @@ function App() {
     }
 
     useEffect(() => {
+
         let ws: WebSocket;
 
         // Message handling
@@ -71,10 +72,24 @@ function App() {
     return (
         <>
             <Logo />
-            <Form pullFormData={pullFormData} />
-            <Indication deviceStatus={deviceStatus} deviceModel={deviceModel} formData={formData} />
-            <Device deviceModel={deviceModel} deviceStatus={deviceStatus} formData={formData} />
-            <PortStatus deviceModel={deviceModel} devicePorts={devicePorts} formData={formData} />
+            <Form 
+                pullFormData={pullFormData} 
+            />
+            <Indication 
+                deviceStatus={deviceStatus} 
+                deviceModel={deviceModel} 
+                formData={formData} 
+            />
+            <Device 
+                deviceModel={deviceModel} 
+                deviceStatus={deviceStatus} 
+                formData={formData} 
+            />
+            <PortStatus 
+                deviceModel={deviceModel} 
+                devicePorts={devicePorts} 
+                formData={formData} 
+            />
         </>
     )
 }

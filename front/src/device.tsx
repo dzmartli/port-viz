@@ -3,11 +3,12 @@ import iosL2DeviceSVG from './assets/ios-l2_device.svg';
 import { DeviceProps } from './types/types';
 
 function Device({deviceStatus, deviceModel, formData}: DeviceProps) {
+
     let deviceSVG: string;
 
     // Device frame switch
     switch (deviceModel) {
-        case 'IOS-L2':
+        case 'vios_l2':
             deviceSVG = iosL2DeviceSVG;
             break;
         default:

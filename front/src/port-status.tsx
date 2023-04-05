@@ -1,11 +1,12 @@
 import { PortStatusProps } from './types/types'
 
 function PortStatus({devicePorts, deviceModel, formData}: PortStatusProps) {
+
     let portStatus: JSX.Element;
 
     // Port status render
     switch (deviceModel) {
-        case 'IOS-L2':
+        case 'vios_l2':
             portStatus = <div>
                             {devicePorts.map(({name, status}) => {
                                 return (

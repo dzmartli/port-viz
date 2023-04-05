@@ -12,7 +12,7 @@ export type DeviceData = {
     device: {
         status: string;
         model: string;
-        ports: Array<PortData>;
+        ports: Array<PortData> | [];
     }
 };
 
