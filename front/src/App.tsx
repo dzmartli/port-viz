@@ -9,7 +9,9 @@ import { IpFormData } from './types/types'
 function App() {
 
     const [wsChannel, setWsChannel] = useState<WebSocket | null>(null);
+    const [wsEvent, setWsEvent] = useState<MessageEvent | null>(null);
     const [detach, setDetach] = useState(false);
+    const [detachSendStatus, setDetachSendStatus] = useState(false);
     const [formData, setFormData] = useState({ip: '', detach: false});
     const [deviceStatus, setDeviceStatus] = useState('disconnected');
     const [deviceModel, setDeviceModel] = useState('IOS-L2');
@@ -17,6 +19,14 @@ function App() {
 
     // Pull form data and flip detach
     const pullFormData = (data: IpFormData) => {
+
+        // Set connecting status
+        if (!detach) {
+            setDeviceStatus('connecting')
+            setDeviceModel('')
+        }
+
+        // Flip detach
         setDetach(!detach);
         const updatedData = {
             ip: data.ip, 
@@ -25,40 +35,41 @@ function App() {
         setFormData(updatedData);
     }
 
+    // Trigger creating ws channel if form submit
     useEffect(() => {
 
         let ws: WebSocket;
-
-        // Message handling
-        // Send detach status after every event
-        const messageHandler = (event: MessageEvent) => {
-            const response = JSON.parse(event.data);
-            setDeviceModel(response.device.model);
-            setDevicePorts(response.device.ports);
-            setDeviceStatus(response.device.status);
-            ws.send((JSON.stringify(formData)));
-        }
-
-        // Close ws
-        const cleanUp = () => {
-            wsChannel?.removeEventListener('message', messageHandler);
-            wsChannel?.close();
-        }
 
         // Prevent default trigger
         if (formData.ip === '') {
             return
         }
 
-        // Close ws after detach click
-        if (formData.detach) {
-            wsChannel ? wsChannel.onopen = () => ws.send((JSON.stringify(formData))) : console.log('ws already closed');
-            cleanUp();
+        // Message handler
+        const messageHandler = (event: MessageEvent) => {
+            setWsEvent(event);
+        }
+
+        // Clean up
+        const cleanUp = () => {
+            wsChannel?.removeEventListener('message', messageHandler);
+            wsChannel?.close(1000);
+        }
+
+        // Close channel if detach sended
+        const closeChannel = () => {
+            if (detachSendStatus) {
+                cleanUp()
+            }
         }
 
         // Create ws
-        function createChannel() {
-            cleanUp();
+        const createChannel = () => {
+
+            if (wsChannel) {
+                cleanUp()
+            }
+            
             ws = new WebSocket(import.meta.env.VITE_WS);
             ws.onopen = () => ws.send((JSON.stringify(formData)));
             ws.addEventListener('message', messageHandler);
@@ -66,14 +77,59 @@ function App() {
         }
 
         createChannel()
+        closeChannel()
 
     }, [formData])
+
+    // Trigger for ws events
+    useEffect(() => {
+        
+        // Prevent default trigger
+        if (!wsEvent) {
+            return
+        }
+
+        // Update send detach status
+        const updateDetachStatus = () => {
+            if (formData.detach) {
+                setDetachSendStatus(true)
+            }
+        }
+
+        // Handle ws send
+        const handleSend = () => {
+            if (wsChannel?.readyState === WebSocket.OPEN) {
+                wsChannel.send((JSON.stringify(formData)));
+            } else {
+                setTimeout(() => {handleSend()}, 1000)
+            }
+        };
+
+        // Set defaults if disconnected
+        const setDefaults = () => {
+            if (response.device.status === 'disconnected') {
+                setDetach(false)
+                setDetachSendStatus(false)
+                setFormData({ip: '', detach: false})
+            }
+        }
+
+        const response = JSON.parse(wsEvent.data);
+        setDeviceModel(response.device.model);
+        setDevicePorts(response.device.ports);
+        setDeviceStatus(response.device.status);
+        setDefaults()
+        handleSend()
+        updateDetachStatus()
+
+    }, [wsEvent])
 
     return (
         <>
             <Logo />
             <Form 
-                pullFormData={pullFormData} 
+                pullFormData={pullFormData}
+                deviceStatus={deviceStatus} 
             />
             <Indication 
                 deviceStatus={deviceStatus} 

@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { IpFormProps, IpFormData } from './types/types'
 
-function IpForm(props: IpFormProps) {
+function IpForm({pullFormData, deviceStatus}: IpFormProps) {
     
     const [buttonState, setButtonState] = useState(true);
     const {
@@ -16,11 +16,18 @@ function IpForm(props: IpFormProps) {
             detach: false
         }
     });
+
+    const onSubmit = (data: IpFormData) => { 
+        pullFormData(data);
+        setButtonState(!buttonState);
+    }
     
-    // Change button name CONNECT/DETACH
-    const handleClick = () => setButtonState(!buttonState);
-    const onSubmit = (data: IpFormData) => props.pullFormData(data);
-    
+    useEffect(() => {
+        if (deviceStatus === "disconnected") {
+            setButtonState(true)
+        }
+    }, [deviceStatus])
+
     return (
         <>
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -41,7 +48,7 @@ function IpForm(props: IpFormProps) {
                             }
                         })
                 } />
-                <button className="connect" type="submit" onClick={handleClick}>{buttonState ? 'CONNECT' : 'DETACH'}</button>
+                <button className="connect" type="submit">{buttonState ? 'CONNECT' : 'DETACH'}</button>
             </form>
         </>
     );

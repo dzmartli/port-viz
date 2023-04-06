@@ -36,4 +36,5 @@ export type IndicationProps = {
 
 export type IpFormProps = {
     pullFormData: (arg0: IpFormData) => void;
+    deviceStatus: string;
 };
