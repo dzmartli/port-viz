@@ -1,4 +1,5 @@
 import LogoSVG from './assets/logo.svg';
+import { memo } from 'react';
 
 function Logo() {
     return (
@@ -10,4 +11,4 @@ function Logo() {
     );
 }
 
-export default Logo;
+export default memo(Logo);

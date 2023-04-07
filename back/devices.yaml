@@ -1,0 +1,6 @@
+- ip: 192.168.200.5
+  type: cisco_ios
+
+# Device with unknown os
+- ip: 192.168.200.7
+  type: some_os

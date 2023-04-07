@@ -114,10 +114,19 @@ function App() {
             }
         }
 
+        const deviceAlert = () => {
+            if (response.device.status === 'unknown device' ||
+                response.device.status === 'unknown model') {
+                const alertStatus = response.device.status
+                alert(alertStatus.charAt(0).toUpperCase() + alertStatus.slice(1))
+            }
+        }
+
         const response = JSON.parse(wsEvent.data);
         setDeviceModel(response.device.model);
         setDevicePorts(response.device.ports);
         setDeviceStatus(response.device.status);
+        deviceAlert()
         setDefaults()
         handleSend()
         updateDetachStatus()
