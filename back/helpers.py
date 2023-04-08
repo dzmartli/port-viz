@@ -1,4 +1,6 @@
-import json
+"""
+Helper functions
+"""
 import sys
 import time
 from typing import Union, Dict
@@ -6,13 +8,19 @@ from typing import Union, Dict
 from fastapi import WebSocket
 from netmiko import ConnectHandler
 
-
 from app.utils import DataHandler, Device
 
 
 async def disconnect(websocket: WebSocket,
                      any_exception: Union[Exception, str]
                      ) -> None:
+    """
+    'Universal' exception handler
+
+    Args:
+        websocket (WebSocket): WebSocket
+        any_exception (Exception | str): any exception
+    """
     response_data = Device(status='disconnected')
     await websocket.send_json(response_data.dict())
     print('EXCEPTION: ', any_exception, flush=True)
@@ -23,6 +31,13 @@ async def disconnect(websocket: WebSocket,
 async def config_check(websocket: WebSocket,
                        device_conf: Dict[str, str]
                        ) -> None:
+    """
+    Netmiko config check
+
+    Args:
+        websocket (WebSocket): WebSocket
+        device_conf (dict): netmiko connection config
+    """
     if device_conf.get('host') == 'unknown device':
         response_data = Device(status='unknown device')
         await websocket.send_json(response_data.dict())
@@ -36,6 +51,12 @@ async def config_check(websocket: WebSocket,
 
 
 async def websocket_connect(websocket: WebSocket) -> None:
+    """
+    Websocket connection
+
+    Args:
+        websocket (WebSocket): WebSocket
+    """
     try:
         await websocket.accept()
     except Exception as any_exception:
@@ -43,11 +64,18 @@ async def websocket_connect(websocket: WebSocket) -> None:
 
 
 async def device_connect(websocket: WebSocket) -> None:
+    """
+    Device connection and data collecting
+
+    Args:
+        websocket (WebSocket): WebSocket
+    """
     try:
+        data_handler = DataHandler()
         # Get form data
-        data = await websocket.receive_text()
-        data_helper = DataHandler()
-        device_conf = data_helper.get_device_conf(json.loads(data).get('ip'))
+        received_data = await websocket.receive_text()
+        received_form = data_handler.get_received_form(received_data)
+        device_conf = data_handler.get_device_conf(received_form.ip)
         # Chech device in devices.yaml
         await config_check(websocket, device_conf)
         # Create connection
@@ -55,24 +83,18 @@ async def device_connect(websocket: WebSocket) -> None:
             ssh.enable()
             # Get version data
             version_data = ssh.send_command("sh ver")
-            parsed_model = data_helper.get_parsed_data('sh ver', version_data)
-            model = DataHandler.get_device_model(parsed_model)
-            response_data = Device(status='connecting', model=model)
+            response_data = data_handler.get_version_response(version_data)
             await websocket.send_json(response_data.dict())
             while True:
                 time.sleep(1)
                 # Get port status data
                 ports_data = ssh.send_command("sh ip int br")
-                parsed_ports = data_helper.get_parsed_data("sh ip int br",
-                                                           ports_data)
-                ports = data_helper.get_port_status_list(parsed_ports)
-                response_data = Device(status='connected',
-                                       model=model,
-                                       ports=ports)
+                response_data = data_handler.get_ports_response(ports_data)
                 await websocket.send_json(response_data.dict())
                 # Disconnect if detach received
-                data = await websocket.receive_text()
-                if json.loads(data).get('detach'):
+                received_data = await websocket.receive_text()
+                received_form = data_handler.get_received_form(received_data)
+                if received_form.detach:
                     ssh.disconnect()
                     await websocket.close()
                     sys.exit(1)
