@@ -1,12 +1,15 @@
 import os
 import textfsm
 import yaml
+
+from pydantic.dataclasses import dataclass
+from pydantic import BaseModel
 from typing import Union, List, Dict, Optional, Any
 
 
-PortType = Dict[str, Union[str, bool]]
+Port_Type = Dict[str, Union[str, bool]]
 
-DeviceType = Dict[
+Device_Type = Dict[
     str,
     Dict[
         str,
@@ -14,103 +17,102 @@ DeviceType = Dict[
             str,
             None,
             Union[
-                List[PortType],
+                List[Port_Type],
                 List[Any]
             ]
         ]
     ]
 ]
 
-# Netmiko default connection conf template
-netmiko_template = {
-    "device_type": '',
-    "host": '',
-    "username": '',
-    "password": '',
-    "secret": '',
-}
+
+#@dataclass
+class Port(BaseModel):
+    name: str
+    status: bool
 
 
-def get_template(command: str) -> str:
-    file_name = command.replace(' ', '_')
-    location = os.path.realpath(os.path.join(os.getcwd(),
-                                             os.path.dirname(__file__)))
-    return f'{location}/{file_name}.template'
+#@dataclass
+class Device(BaseModel):
+    status: str
+    model: str = 'not defined'
+    ports: List[Port] = []
 
 
-def convert_port_name(port_name: str) -> str:
-    if 'Gigabit' in port_name:
-        _, number = port_name.split('Ethernet')
-        return f'GE{number}'
-    elif 'Fast' in port_name:
-        _, number = port_name.split('Ethernet')
-        return f'FE{number}'
-    else:
-        _, number = port_name.split('Ethernet')
-        return f'ET{number}'
+class DataHandler:
 
-
-def get_parsed_data(action: str, data: str) -> List[List[str]]:
-    templete = get_template(action)
-    with open(templete) as file:
-        fsm = textfsm.TextFSM(file)
-        return fsm.ParseText(data)
-
-
-def get_model(parsed_data: List[List[str]]) -> Optional[str]:
-    return parsed_data[0][0].split('-')[0]
-
-
-def get_ports_list(parsed_data: List[List[str]]
-                   ) -> Union[List[PortType], List[Any]]:
-    # print(parsed_data, flush=True)
-    ports: list = []
-    for parsed_port in parsed_data:
-        port: PortType = {}
-        if 'Ethernet' in parsed_port[0]:
-            port['name'] = convert_port_name(parsed_port[0])
-            if parsed_port[2] == 'up':
-                port['status'] = True
-            else:
-                port['status'] = False
-            ports.append(port)
-    return ports
-
-
-def get_json(status: str,
-             model: Optional[str],
-             ports: Optional[List[PortType]]
-             ) -> DeviceType:
-    if ports is None:
-        ports = []
-    return {
-        'device': {
-            'status': status,
-            'model': model,
-            'ports': ports,
-        }
+    location = os.environ['LOCATION']
+    netmiko_template = {
+        "device_type": '',
+        "host": '',
+        "username": '',
+        "password": '',
+        "secret": '',
     }
 
+    def __init__(self) -> None:
+        self.credentials = self._set_credentials()
+        self.devices = self._set_devices()
 
-def get_device_conf(ip: str,
-                    netmiko_template: Dict[str, str]
-                    ) -> Dict[str, str]:
-    location = os.path.realpath(os.path.join(os.getcwd(),
-                                             os.path.dirname(__file__)))
-    # Set credentials
-    with open(f'{location}/credentials.yaml') as credentials_yaml:
-        credentials = yaml.safe_load(credentials_yaml)
-        netmiko_template['username'] = credentials['username']
-        netmiko_template['password'] = credentials['password']
-        netmiko_template['secret'] = credentials['secret']
-    # Set IP and model/os
-    with open(f'{location}/devices.yaml') as devices_yaml:
-        devices = yaml.safe_load(devices_yaml)
-        for device in devices:
-            if device['ip'] == ip:
-                netmiko_template['device_type'] = device['type']
-                netmiko_template['host'] = ip
-                return netmiko_template
-    netmiko_template['host'] = 'unknown device'
-    netmiko_template['device_type'] = 'unknown model'
-    return netmiko_template
+    @classmethod
+    def _set_credentials(cls) -> Dict[str, str]:
+        with open(f'{cls.location}/credentials.yaml') as credentials_yaml:
+            return yaml.safe_load(credentials_yaml)
+
+    @classmethod
+    def _set_devices(cls) -> Dict[str, str]:
+        with open(f'{cls.location}/devices.yaml') as devices_yaml:
+            return yaml.safe_load(devices_yaml)
+
+    def _get_template(self, command: str) -> str:
+        file_name = command.replace(' ', '_')
+        return f'{self.location}/{file_name}.template'
+
+    def _convert_port_name(self, port_name: str) -> str:
+        if 'Gigabit' in port_name:
+            _, number = port_name.split('Ethernet')
+            return f'GE{number}'
+        elif 'Fast' in port_name:
+            _, number = port_name.split('Ethernet')
+            return f'FE{number}'
+        else:
+            _, number = port_name.split('Ethernet')
+            return f'ET{number}'
+
+    def get_parsed_data(self, action: str, data: str) -> List[List[str]]:
+        templete = self._get_template(action)
+        with open(templete) as file:
+            fsm = textfsm.TextFSM(file)
+            return fsm.ParseText(data)
+
+    def get_port_status_list(self,
+                             parsed_data: List[List[str]]
+                             ) -> Union[List[Port_Type], List[Any]]:
+        ports: list = []
+        for parsed_port in parsed_data:
+            if 'Ethernet' in parsed_port[0]:
+                name = self._convert_port_name(parsed_port[0])
+                if parsed_port[2] == 'up':
+                    status = True
+                else:
+                    status = False
+                port = Port(name=name, status=status)
+                ports.append(port)
+        return ports
+
+    def get_device_conf(self, ip: str) -> Dict[str, str]:
+        self.netmiko_template['username'] = self.credentials.get('username')
+        self.netmiko_template['password'] = self.credentials.get('password')
+        self.netmiko_template['secret'] = self.credentials.get('secret')
+        # Set IP and model/os
+        for device in self.devices:
+            if device.get('ip') == ip:
+                self.netmiko_template['device_type'] = device.get('type')
+                self.netmiko_template['host'] = ip
+                return self.netmiko_template
+        self.netmiko_template['host'] = 'unknown device'
+        self.netmiko_template['device_type'] = 'unknown model'
+        return self.netmiko_template
+
+    @staticmethod
+    def get_device_model(parsed_data: List[List[str]]) -> Optional[str]:
+        return parsed_data[0][0].split('-')[0]

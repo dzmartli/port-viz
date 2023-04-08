@@ -14,7 +14,7 @@ function App() {
     const [detachSendStatus, setDetachSendStatus] = useState(false);
     const [formData, setFormData] = useState({ip: '', detach: false});
     const [deviceStatus, setDeviceStatus] = useState('disconnected');
-    const [deviceModel, setDeviceModel] = useState('IOS-L2');
+    const [deviceModel, setDeviceModel] = useState('not defined');
     const [devicePorts, setDevicePorts] = useState([]);
 
     // Pull form data and flip detach
@@ -23,7 +23,7 @@ function App() {
         // Set connecting status
         if (!detach) {
             setDeviceStatus('connecting')
-            setDeviceModel('')
+            setDeviceModel('not defined')
         }
 
         // Flip detach
@@ -107,7 +107,7 @@ function App() {
 
         // Set defaults if disconnected
         const setDefaults = () => {
-            if (response.device.status === 'disconnected') {
+            if (response.status === 'disconnected') {
                 setDetach(false)
                 setDetachSendStatus(false)
                 setFormData({ip: '', detach: false})
@@ -115,17 +115,17 @@ function App() {
         }
 
         const deviceAlert = () => {
-            if (response.device.status === 'unknown device' ||
-                response.device.status === 'unknown model') {
-                const alertStatus = response.device.status
+            if (response.status === 'unknown device' ||
+                response.status === 'unknown model') {
+                const alertStatus = response.status
                 alert(alertStatus.charAt(0).toUpperCase() + alertStatus.slice(1))
             }
         }
 
         const response = JSON.parse(wsEvent.data);
-        setDeviceModel(response.device.model);
-        setDevicePorts(response.device.ports);
-        setDeviceStatus(response.device.status);
+        setDeviceModel(response.model);
+        setDevicePorts(response.ports);
+        setDeviceStatus(response.status);
         deviceAlert()
         setDefaults()
         handleSend()

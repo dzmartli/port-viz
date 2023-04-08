@@ -9,11 +9,9 @@ export type PortData = {
 };
 
 export type DeviceData = {
-    device: {
-        status: string;
-        model: string;
-        ports: Array<PortData> | [];
-    }
+    status: string;
+    model: string;
+    ports: Array<PortData> | [];
 };
 
 export type PortStatusProps = {
