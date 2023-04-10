@@ -16,6 +16,6 @@
 |:--:| 
 | *UI* |
 
-### UML diagram
+### UML diagram:
 ![](port-viz.svg)
 
