@@ -1,5 +1,5 @@
 import nullDeviceSVG from './assets/null_device.svg';
-import iosL2DeviceSVG from './assets/ios-l2_device.svg';
+import testDeviceSVG from './assets/test_device.svg';
 import { DeviceProps } from './types/types';
 
 function Device({deviceStatus, deviceModel, formData}: DeviceProps) {
@@ -8,8 +8,8 @@ function Device({deviceStatus, deviceModel, formData}: DeviceProps) {
 
     // Device frame switch
     switch (deviceModel) {
-        case 'vios_l2':
-            deviceSVG = iosL2DeviceSVG;
+        case 'test_model':
+            deviceSVG = testDeviceSVG;
             break;
         default:
             deviceSVG = nullDeviceSVG;

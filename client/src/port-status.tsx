@@ -6,13 +6,13 @@ function PortStatus({devicePorts, deviceModel, formData}: PortStatusProps) {
 
     // Port status render
     switch (deviceModel) {
-        case 'vios_l2':
+        case 'test_model':
             portStatus = <div>
                             {devicePorts.map(({name, status}) => {
                                 return (
                                     <div 
-                                        className={`port-${name.toLowerCase().replace('/', '_')} 
-                                        status ${status === true ? "up" : "down"}`} 
+                                        className={`status ${status === true ? "up" : "down"}`}
+                                        id={`port-${name.toLowerCase().replace('/', '_')}`}
                                         key={name}>
                                         up
                                     </div>
@@ -27,7 +27,7 @@ function PortStatus({devicePorts, deviceModel, formData}: PortStatusProps) {
 
     // No ports if disconnected
     if (formData.detach) {
-        portStatus = <div></div>
+        portStatus = <div></div>;
     }
 
     return (

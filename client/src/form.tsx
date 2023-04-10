@@ -23,9 +23,11 @@ function IpForm({pullFormData, deviceStatus}: IpFormProps) {
     }
     
     useEffect(() => {
+
         if (deviceStatus === "disconnected") {
-            setButtonState(true)
+            setButtonState(true);
         }
+    
     }, [deviceStatus])
 
     return (

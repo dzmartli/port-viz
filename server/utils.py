@@ -57,7 +57,7 @@ class DataHandler:
     port_status_command = 'sh ip int br'
 
     def __init__(self) -> None:
-        self.model: str
+        self.model = 'not defined'
         self.credentials = self._set_credentials()
         self.devices = self._set_devices()
 

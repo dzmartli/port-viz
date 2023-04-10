@@ -1,9 +1,11 @@
 FROM node:16-alpine 
 
 RUN mkdir /app && chown node:node /app
+
 WORKDIR /app
 
 USER node
+
 COPY --chown=node:node package.json package-lock.json* ./
 
 RUN npm i 
@@ -11,5 +13,3 @@ RUN npm i
 COPY --chown=node:node . .
 
 EXPOSE 3000
-
-CMD ["npm", "run", "dev"]

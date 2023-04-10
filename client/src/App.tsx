@@ -22,8 +22,8 @@ function App() {
 
         // Set connecting status
         if (!detach) {
-            setDeviceStatus('connecting')
-            setDeviceModel('not defined')
+            setDeviceStatus('connecting');
+            setDeviceModel('not defined');
         }
 
         // Flip detach
@@ -31,7 +31,7 @@ function App() {
         const updatedData = {
             ip: data.ip, 
             detach: detach
-        }
+        };
         setFormData(updatedData);
     }
 
@@ -59,7 +59,7 @@ function App() {
         // Close channel if detach sended
         const closeChannel = () => {
             if (detachSendStatus) {
-                cleanUp()
+                cleanUp();
             }
         }
 
@@ -67,7 +67,7 @@ function App() {
         const createChannel = () => {
 
             if (wsChannel) {
-                cleanUp()
+                cleanUp();
             }
             
             ws = new WebSocket(import.meta.env.VITE_WS);
@@ -76,8 +76,8 @@ function App() {
             setWsChannel(ws);
         }
 
-        createChannel()
-        closeChannel()
+        createChannel();
+        closeChannel();
 
     }, [formData])
 
@@ -92,7 +92,7 @@ function App() {
         // Update send detach status
         const updateDetachStatus = () => {
             if (formData.detach) {
-                setDetachSendStatus(true)
+                setDetachSendStatus(true);
             }
         }
 
@@ -101,24 +101,24 @@ function App() {
             if (wsChannel?.readyState === WebSocket.OPEN) {
                 wsChannel.send((JSON.stringify(formData)));
             } else {
-                setTimeout(() => {handleSend()}, 1000)
+                setTimeout(() => {handleSend()}, 1000);
             }
         };
 
         // Set defaults if disconnected
         const setDefaults = () => {
             if (response.status === 'disconnected') {
-                setDetach(false)
-                setDetachSendStatus(false)
-                setFormData({ip: '', detach: false})
+                setDetach(false);
+                setDetachSendStatus(false);
+                setFormData({ip: '', detach: false});
             }
         }
 
         const deviceAlert = () => {
             if (response.status === 'unknown device' ||
                 response.status === 'unknown model') {
-                const alertStatus = response.status
-                alert(alertStatus.charAt(0).toUpperCase() + alertStatus.slice(1))
+                const alertStatus = response.status;
+                alert(alertStatus.charAt(0).toUpperCase() + alertStatus.slice(1));
             }
         }
 
@@ -126,10 +126,10 @@ function App() {
         setDeviceModel(response.model);
         setDevicePorts(response.ports);
         setDeviceStatus(response.status);
-        deviceAlert()
-        setDefaults()
-        handleSend()
-        updateDetachStatus()
+        deviceAlert();
+        setDefaults();
+        handleSend();
+        updateDetachStatus();
 
     }, [wsEvent])
 
