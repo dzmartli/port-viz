@@ -1,0 +1,133 @@
+@startuml
+title Port-viz sequence diagram
+participant "Client" as Foo1
+participant "Server" as Foo2
+participant "Network device" as Foo3
+alt Form validation
+    alt Form data check
+        Foo1 [#blue]--> Foo2 : WS connection
+        alt Device connection
+            Foo2 [#blue]--> Foo3 : SSH connection
+            Foo1 <-[#blue] Foo2 : WS response
+            note left #LightBlue
+                WS data (Server > Client):
+                    status: "connecting"
+                    model: "not defined"
+                Indiction status:
+                    DISCONNECTED > CONNECTING
+                form submit button:
+                    CONNECT > DETACH
+            end note
+            alt Get model info
+                Foo2 <-[#blue] Foo3 : SSH (model info)
+                Foo1 <-[#blue] Foo2 : WS response
+                note left #LightBlue
+                    WS data (Server > Client):
+                        status: "connecting"
+                        model: device model
+                    Indiction status:
+                        CONNECTING
+                end note
+                loop Get ports data
+                    Foo2 <-[#blue] Foo3 : SSH (ports data)
+                    Foo1 <-[#blue] Foo2 : WS response
+                    note left #LightBlue
+                        WS data (Server > Client):
+                            status: "connected"
+                            model: device model
+                            ports: ports data
+                        Indiction status:
+                            CONNECTING > device model
+                    end note
+                    Foo1 [#blue]-> Foo2 : WS send
+                    note left #LightBlue
+                        WS data (Client > Server):
+                            detach: false
+                    end note
+                    break #Pink 'detach: true' received from Client
+                        Foo2 [#red]-> Foo3 : SSH disconnect
+                        Foo1 <-[#red] Foo2 : WS close
+                        note left
+                            WS data (Client > Server):
+                                detach: true
+                            Indiction status:
+                                device model > DISCONNECTED
+                            form submit button:
+                                DETACH > CONNECT
+                        end note
+                    end
+                end
+            else #Pink Netmiko exception (disconnect)
+                Foo1 <-[#red] Foo2 : WS close
+                note left
+                    WS data (Server > Client):
+                        status: "disconnected"
+                    Indiction status:
+                        device model > DISCONNECTED
+                    form submit button:
+                        DETACH > CONNECT
+                end note
+            else #Pink Websocket exception (disconnect)
+                Foo1 <-[#red]> Foo2 : WS disconnect
+                note left
+                    Indiction status:
+                        device model > DISCONNECTED
+                    form submit button:
+                        DETACH > CONNECT
+                end note
+                Foo2 [#red]-> Foo3 : SSH disconnect
+            end
+        else #Pink Netmiko exception (auth fail, timeout exception, etc.)
+            Foo1 <-[#red] Foo2 : WS close
+            note left
+                WS data (Server > Client):
+                    status: "disconnected"
+                Indiction status:
+                    CONNECTING > DISCONNECTED
+                form submit button:
+                    DETACH > CONNECT
+            end note
+        else #Pink Websocket exception (disconnect)
+            Foo1 <-[#red]> Foo2 : WS disconnect
+            note left
+                Indiction status:
+                    device model > DISCONNECTED
+                form submit button:
+                    DETACH > CONNECT
+            end note
+        end
+    else #Pink Unknown IP address
+        Foo1 <-[#red] Foo2 : WS close
+        note left
+            WS data (Server > Client):
+                status: "disconnected"
+            Indiction status:
+                CONNECTING > DISCONNECTED
+            form submit button:
+                DETACH > CONNECT
+        end note
+        hnote over Foo1 : Alarm "Unknown device"
+    else #Pink Unknown device model
+        Foo1 <-[#red] Foo2 : WS close
+        note left
+            WS data (Server > Client):
+                status: "disconnected"
+            Indiction status:
+                CONNECTING > DISCONNECTED
+            form submit button:
+                DETACH > CONNECT
+        end note
+        hnote over Foo1 : Alarm "Unknown model"
+    else #Pink Websocket exception (disconnect)
+        Foo1 <-[#red]> Foo2 : WS disconnect
+        note left
+            Indiction status:
+                CONNECTING > DISCONNECTED
+            form submit button:
+                DETACH > CONNECT
+        end note
+    end
+else #Pink Form not valid
+    hnote over Foo1 : Validation error
+end
+@enduml

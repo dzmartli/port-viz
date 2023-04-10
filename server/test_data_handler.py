@@ -175,7 +175,7 @@ def test__get_template(sh_ver_template, sh_ip_int_br_template, data_handler):
 
 
 def test__convert_port_name(data_handler):
-    # Cases for different ports
+    # Cases for different pot types
     assert data_handler._convert_port_name('GigabitEthernet0/1') == 'GE0/1'
     assert data_handler._convert_port_name('FastEthernet0/2') == 'FE0/2'
     assert data_handler._convert_port_name('Ethernet0/3') == 'ET0/3'
