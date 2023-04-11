@@ -79,12 +79,12 @@ def received_data():
 
 @pytest.fixture
 def sh_ver_template():
-    return '/code/app/sh_ver.template'
+    return '/code/app/templates/sh_ver.template'
 
 
 @pytest.fixture
 def sh_ip_int_br_template():
-    return '/code/app/sh_ip_int_br.template'
+    return '/code/app/templates/sh_ip_int_br.template'
 
 
 @pytest.fixture

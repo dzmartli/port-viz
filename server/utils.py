@@ -69,7 +69,7 @@ class DataHandler:
         Returns:
             (dict): user/pass data
         """
-        with open(f'{cls.location}/credentials.yaml') as credentials_yaml:
+        with open(f'{cls.location}/params/credentials.yaml') as credentials_yaml:
             return yaml.safe_load(credentials_yaml)
 
     @classmethod
@@ -80,7 +80,7 @@ class DataHandler:
         Returns:
             (dict): ip/os data
         """
-        with open(f'{cls.location}/devices.yaml') as devices_yaml:
+        with open(f'{cls.location}/params/devices.yaml') as devices_yaml:
             return yaml.safe_load(devices_yaml)
 
     def _get_template(self, command: str) -> str:
@@ -94,7 +94,7 @@ class DataHandler:
             (str): template name
         """
         file_name = command.replace(' ', '_')
-        return f'{self.location}/{file_name}.template'
+        return f'{self.location}/templates/{file_name}.template'
 
     def _convert_port_name(self, port_name: str) -> str:
         """
