@@ -17,5 +17,7 @@
 | *UI* |
 
 ### UML diagram:
-![](port-viz.svg)
+<p align="center">
+  <img src="port-viz.svg" />
+</p>
 
