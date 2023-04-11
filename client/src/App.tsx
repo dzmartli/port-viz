@@ -1,10 +1,10 @@
-import Logo from './logo'
-import Device from './device'
-import Form from './form'
-import Indication from './indication'
-import PortStatus from './port-status'
+import Logo from './logo';
+import Device from './device';
+import Form from './form';
+import Indication from './indication';
+import PortStatus from './port-status';
 import { useEffect, useState } from "react";
-import { IpFormData } from './types/types'
+import { IpFormData } from './types/types';
 
 function App() {
 

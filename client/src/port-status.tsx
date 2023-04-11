@@ -1,4 +1,5 @@
-import { PortStatusProps } from './types/types'
+import "./styles/test_device.css";
+import { PortStatusProps } from './types/types';
 
 function PortStatus({devicePorts, deviceModel, formData}: PortStatusProps) {
 
