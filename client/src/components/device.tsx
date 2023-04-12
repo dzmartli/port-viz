@@ -1,6 +1,6 @@
-import nullDeviceSVG from './assets/null_device.svg';
-import testDeviceSVG from './assets/test_device.svg';
-import { DeviceProps } from './types/types';
+import nullDeviceSVG from '../assets/null_device.svg';
+import testDeviceSVG from '../assets/test_device.svg';
+import { DeviceProps } from '../types/types';
 
 function Device({deviceStatus, deviceModel, formData}: DeviceProps) {
 

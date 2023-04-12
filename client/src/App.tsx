@@ -1,8 +1,8 @@
-import Logo from './logo';
-import Device from './device';
-import Form from './form';
-import Indication from './indication';
-import PortStatus from './port-status';
+import Logo from './components/logo';
+import Device from './components/device';
+import Form from './components/form';
+import Indication from './components/indication';
+import PortStatus from './components/port-status';
 import { useEffect, useState } from "react";
 import { IpFormData } from './types/types';
 

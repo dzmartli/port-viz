@@ -1,4 +1,4 @@
-import { IndicationProps } from './types/types';
+import { IndicationProps } from '../types/types';
 
 function Indication({deviceStatus, deviceModel, formData}: IndicationProps) {
 

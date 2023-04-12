@@ -1,4 +1,4 @@
-import LogoSVG from './assets/logo.svg';
+import LogoSVG from '../assets/logo.svg';
 import { memo } from 'react';
 
 function Logo() {

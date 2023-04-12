@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { IpFormProps, IpFormData } from './types/types';
+import { IpFormProps, IpFormData } from '../types/types';
 
 function IpForm({pullFormData, deviceStatus}: IpFormProps) {
     
