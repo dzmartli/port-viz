@@ -27,7 +27,7 @@ function App() {
         }
 
         // Flip detach
-        setDetach(!detach);
+        setDetach(oldDetach => !oldDetach);
         const updatedData = {
             ip: data.ip, 
             detach: detach
@@ -113,7 +113,8 @@ function App() {
                 setFormData({ip: '', detach: false});
             }
         }
-
+        
+        // Alert if status 'unknown device' or 'unknown model'
         const deviceAlert = () => {
             if (response.status === 'unknown device' ||
                 response.status === 'unknown model') {
