@@ -20,7 +20,7 @@ function IpForm({pullFormData, deviceStatus}: IpFormProps) {
     const onSubmit = (data: IpFormData) => { 
         pullFormData(data);
         setButtonState(!buttonState);
-    }
+    };
     
     useEffect(() => {
 
@@ -28,7 +28,7 @@ function IpForm({pullFormData, deviceStatus}: IpFormProps) {
             setButtonState(true);
         }
     
-    }, [deviceStatus])
+    }, [deviceStatus]);
 
     return (
         <>

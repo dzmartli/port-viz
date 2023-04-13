@@ -1,35 +1,47 @@
 import "../styles/test_device.css";
 import { PortStatusProps } from '../types/types';
+import { useEffect, useState } from "react";
 
 function PortStatus({devicePorts, deviceModel, formData}: PortStatusProps) {
 
-    let portStatus: JSX.Element;
+    const [portStatus, setPortStatus] = useState(<div></div>);
 
-    // Port status render
-    switch (deviceModel) {
-        case 'test_model':
-            portStatus = <div>
-                            {devicePorts.map(({name, status}) => {
-                                return (
-                                    <div 
-                                        className={`status ${status === true ? "up" : "down"}`}
-                                        id={`port-${name.toLowerCase().replace('/', '_')}`}
-                                        key={name}>
-                                        up
-                                    </div>
-                                )
-                            })}
-                        </div>;
-            break;
-        default:
-            portStatus = <div></div>
-            break;
-    }
+    useEffect(() => {
 
-    // No ports if disconnected
-    if (formData.detach) {
-        portStatus = <div></div>;
-    }
+        // Port status render
+        const choosePortStatus = () => {
+            switch (deviceModel) {
+                case 'test_model':
+                    setPortStatus(<div>
+                                    {devicePorts.map(({name, status}) => {
+                                        return (
+                                            <div 
+                                                className={`status ${status === true ? "up" : "down"}`}
+                                                id={`port-${name.toLowerCase().replace('/', '_')}`}
+                                                key={name}>
+                                                up
+                                            </div>
+                                        )
+                                    })}
+                                </div>)
+                    break;
+                default:
+                    setPortStatus(<div></div>);
+                    break;
+            };
+        };
+
+        // No ports if disconnected
+        const ifDetach = () => {
+            if (formData.detach) {
+                setPortStatus(<div></div>);
+            }
+        };
+        
+        choosePortStatus();
+        ifDetach();
+
+    }, [devicePorts, formData]);
 
     return (
         <>  

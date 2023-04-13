@@ -1,35 +1,47 @@
 import { IndicationProps } from '../types/types';
+import { useEffect, useState } from "react";
 
 function Indication({deviceStatus, deviceModel, formData}: IndicationProps) {
 
-    let indicationClassName: string = 'indication ';
-    let indicationText: string;
+    const [indicationClassName, setIndicationClassName] = useState('');
+    const [indicationText, setIndicationText] = useState('');
 
-    // Status indication
-    switch (deviceStatus) {
-        case 'connected':
-            indicationClassName += 'connected';
-            indicationText = deviceModel;
-            break;
-        case 'connecting':
-            indicationClassName += 'connecting';
-            indicationText = 'CONNECTING';
-            break;
-        case 'disconnected':
-            indicationClassName += 'disconnected';
-            indicationText = 'DISCONNECTED';
-            break;
-        default:
-            indicationClassName += 'disconnected';
-            indicationText = 'DISCONNECTED';
-            break;
-    }
+    useEffect(() => {
+    
+        const setIndication = (status: string, text: string) => {
+            setIndicationClassName(status);
+            setIndicationText(text);
+        };   
 
-    // Indication for detach
-    if (formData.detach) {
-        indicationClassName = 'indication disconnected';
-        indicationText = 'DISCONNECTED';
-    } 
+        // Status indication
+        const chooseIndication = () => {
+            switch (deviceStatus) {
+                case 'connected':
+                    setIndication('indication connected', deviceModel)
+                    break;
+                case 'connecting':
+                    setIndication('indication connecting', 'CONNECTING')
+                    break;
+                case 'disconnected':
+                    setIndication('indication disconnected', 'DISCONNECTED')
+                    break;
+                default:
+                    setIndication('indication disconnected', 'DISCONNECTED')
+                    break;
+            }
+        };
+
+        // Indication for detach
+        const ifDetach = () => {
+            if (formData.detach) {
+                setIndication('indication disconnected', 'DISCONNECTED')
+            }
+        };
+
+        chooseIndication();
+        ifDetach();
+
+    }, [deviceStatus, formData]);
 
     return (
         <>  

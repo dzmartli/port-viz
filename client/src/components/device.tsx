@@ -1,35 +1,45 @@
 import nullDeviceSVG from '../assets/null_device.svg';
 import testDeviceSVG from '../assets/test_device.svg';
 import { DeviceProps } from '../types/types';
+import { useEffect, useState } from "react";
 
 function Device({deviceStatus, deviceModel, formData}: DeviceProps) {
+    
+    const [deviceSVG, setDeviceSVG] = useState(nullDeviceSVG);
 
-    let deviceSVG: string;
+    useEffect(() => {
 
-    // Device frame switch
-    switch (deviceModel) {
-        case 'test_model':
-            deviceSVG = testDeviceSVG;
-            break;
-        default:
-            deviceSVG = nullDeviceSVG;
-            break;
-    }
+        // Device frame switch
+        const chooseSVG = () => {
+            switch (deviceModel) {
+                case 'test_model':
+                    setDeviceSVG(testDeviceSVG);
+                    break;
+                default:
+                    setDeviceSVG(nullDeviceSVG);
+                    break;
+            }
+        };
 
-    // If disconnected - grey device frame
-    if (deviceStatus === "disconnected" || formData.detach) {
-        deviceSVG = nullDeviceSVG;
-    }
+        // If disconnected - grey device frame
+        const ifDisconnect = () => {
+            if (deviceStatus === "disconnected" || formData.detach) {
+                setDeviceSVG(nullDeviceSVG);
+            }
+        };
 
-    const device = <section className='basic-grid'>
-                        <div className='device'>
-                            <img src={deviceSVG} alt="Device svg" />
-                        </div>
-                   </section>;
+        chooseSVG();
+        ifDisconnect();
+
+    }, [deviceModel, deviceStatus]);
 
     return (
         <>  
-            {device}
+            <section className='basic-grid'>
+                <div className='device'>
+                    <img src={deviceSVG} alt="Device svg" />
+                </div>
+            </section>
         </>
     );
 }
