@@ -128,7 +128,7 @@ alt Form validation
             Form submit button:
                 DETACH <&arrow-right> CONNECT
         end note
-        hnote over Foo1 : Alarm "Unknown device"
+        hnote over Foo1 : Alert "Unknown device"
     else #Pink Unknown device model
         Foo1 <-[#red] Foo2 : WS close
         note left
@@ -141,7 +141,7 @@ alt Form validation
             Form submit button:
                 DETACH <&arrow-right> CONNECT
         end note
-        hnote over Foo1 : Alarm "Unknown model"
+        hnote over Foo1 : Alert "Unknown model"
     else #Pink Websocket exception (disconnect)
         Foo1 <-[#red]> Foo2 : WS disconnect
         note left
